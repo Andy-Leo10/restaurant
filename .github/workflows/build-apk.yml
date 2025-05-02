@@ -1,13 +1,13 @@
-name: Build & Release APK on Push
+name: Build & Upload APK to Release
 
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main  # Trigger on every push to main
 
 jobs:
   build:
-    name: Build & Release APK
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -30,11 +30,12 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Create Release & Upload APK
+      - name: Upload APK to Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: push-${{ steps.vars.outputs.sha_short }}
-          name: "Push Release ${{ steps.vars.outputs.sha_short }}"
-          files: app/build/outputs/apk/release/app-release.apk
+          name: "Auto Release ${{ steps.vars.outputs.sha_short }}"
+          files: |
+            app/build/outputs/apk/release/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
