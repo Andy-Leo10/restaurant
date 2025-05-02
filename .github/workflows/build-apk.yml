@@ -1,13 +1,13 @@
-name: Build & Upload APK to Release
+name: Build & Release APK on Push
 
 on:
   push:
     branches:
-      - main  # Trigger on every push to main
+      - main
 
 jobs:
   build:
-    name: Build APK
+    name: Build & Release APK
     runs-on: ubuntu-latest
 
     steps:
@@ -26,16 +26,18 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
+      - name: Show generated APK paths
+        run: find $PWD -type f -name "*.apk"
+
       - name: Get short SHA
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Upload APK to Release
+      - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: push-${{ steps.vars.outputs.sha_short }}
-          name: "Auto Release ${{ steps.vars.outputs.sha_short }}"
-          files: |
-            app/build/outputs/apk/release/app-release.apk
+          name: "Push Release ${{ steps.vars.outputs.sha_short }}"
+          files: app/build/outputs/apk/release/app-release.apk  # <-- update path if different
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
