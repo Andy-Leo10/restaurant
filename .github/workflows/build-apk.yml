@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: '11' # Replace with the Java version required by your project
+        java-version: '17' # Replace with the Java version required by your project
 
     - name: Build APK
       run: |
