@@ -25,14 +25,12 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@v1.1.0 # Updated to the latest version
       with:
         tag_name: v1.0.0 # Replace with a dynamic version if needed
         release_name: Release v1.0.0
         draft: false
         prerelease: false
-        generate_release_notes: true
-        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload APK to Release
       uses: actions/upload-release-asset@v1
