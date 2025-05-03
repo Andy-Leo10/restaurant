@@ -45,21 +45,21 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "app/build/outputs/apk/debug/*.apk"
-          tag: debug-v0.0.3
+          tag: debug-${{ github.run_number }}
           token: ${{ secrets.TOKEN }}
 
-      # # Build the release APK
-      # - name: Build Release APK
-      #   run: ./gradlew assembleRelease
+      # Build the release APK
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
 
-      # # Verify the release APK exists
-      # - name: Verify Release APK
-      #   run: ls -l app/build/outputs/apk/release/
+      # Verify the release APK exists
+      - name: Verify Release APK
+        run: ls -l app/build/outputs/apk/release/
 
-      # # Upload the release APK to GitHub Releases
-      # - name: Push Release APK to Releases
-      #   uses: ncipollo/release-action@v1
-      #   with:
-      #     artifacts: "app/build/outputs/apk/release/*.apk"
-      #     tag: release-v0.0.2
-      #     token: ${{ secrets.TOKEN }}
+      # Upload the release APK to GitHub Releases
+      - name: Push Release APK to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app/build/outputs/apk/release/*.apk"
+          tag: release-${{ github.run_number }}
+          token: ${{ secrets.TOKEN }}
