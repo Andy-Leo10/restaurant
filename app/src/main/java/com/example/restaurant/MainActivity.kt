@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     if (showWebView) {
-                        WebViewScreen(url = "https://www.dominos.com.pe/")
+                        WebViewScreen(url = "https://www.rappi.com.pe/")
                     } else {
                         ButtonScreen(
                             modifier = Modifier.padding(innerPadding),
@@ -46,7 +46,7 @@ fun ButtonScreen(modifier: Modifier = Modifier, onButtonClick: () -> Unit) {
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
         Button(onClick = onButtonClick) {
-            Text("Open YouTube")
+            Text("Open WebView")
         }
     }
 }
