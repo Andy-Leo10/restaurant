@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             RestaurantTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Andrés",
+                        name = "Leonardo",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
