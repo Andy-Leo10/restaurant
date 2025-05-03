@@ -1,16 +1,18 @@
 package com.example.restaurant
 
 import android.os.Bundle
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.restaurant.ui.theme.RestaurantTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,11 +21,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RestaurantTheme {
+                var showWebView by remember { mutableStateOf(false) }
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Andres-Leonardo",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    if (showWebView) {
+                        WebViewScreen(url = "https://www.dominos.com.pe/")
+                    } else {
+                        ButtonScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            onButtonClick = { showWebView = true }
+                        )
+                    }
                 }
             }
         }
@@ -31,17 +39,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun ButtonScreen(modifier: Modifier = Modifier, onButtonClick: () -> Unit) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+    ) {
+        Button(onClick = onButtonClick) {
+            Text("Open YouTube")
+        }
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    RestaurantTheme {
-        Greeting("Android")
-    }
+fun WebViewScreen(url: String) {
+    AndroidView(factory = { context ->
+        WebView(context).apply {
+            webViewClient = WebViewClient()
+            loadUrl(url)
+        }
+    }, modifier = Modifier.fillMaxSize())
 }
