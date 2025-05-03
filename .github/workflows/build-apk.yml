@@ -7,19 +7,20 @@ name: Build My Apps
 
 jobs:
   build:
-    name: Build and Release new apk
+    name: Build and Release APKs
     runs-on: ubuntu-latest
+
     steps:
-      # Checkout the repository
+      # Checkout repo
       - uses: actions/checkout@v3
 
-      # Set up Java 17
+      # Java 17
       - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '17'
-      
-      # Cache Gradle dependencies
+
+      # Cache Gradle
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
@@ -27,20 +28,18 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      
-      # Grant execute permissions to the Gradle wrapper
+
+      # Permiso a gradlew
       - name: Make Gradlew Executable
         run: chmod +x ./gradlew
 
-      # Build the debug APK
+      # Build APK Debug
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
-      # Verify the debug APK exists
       - name: Verify Debug APK
         run: ls -l app/build/outputs/apk/debug/
 
-      # Upload the debug APK to GitHub Releases
       - name: Push Debug APK to Releases
         uses: ncipollo/release-action@v1
         with:
@@ -48,18 +47,33 @@ jobs:
           tag: debug-${{ github.run_number }}
           token: ${{ secrets.TOKEN }}
 
-      # Build the release APK
+      # Build APK Release
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      # Verify the release APK exists
       - name: Verify Release APK
         run: ls -l app/build/outputs/apk/release/
 
-      # Upload the release APK to GitHub Releases
-      - name: Push Release APK to Releases
+      # Firmar APK
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+
+      - name: Sign APK
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore keystore.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.KEY_PASSWORD }} \
+            app/build/outputs/apk/release/app-release-unsigned.apk ${{ secrets.KEY_ALIAS }}
+
+      - name: Zipalign APK
+        run: |
+          sudo apt-get update && sudo apt-get install -y zipalign
+          zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
+
+      # Subir APK firmado
+      - name: Push Signed Release APK to Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "app/build/outputs/apk/release/app-release-unsigned.apk"
+          artifacts: "app/build/outputs/apk/release/app-release.apk"
           tag: release-${{ github.run_number }}
           token: ${{ secrets.TOKEN }}
