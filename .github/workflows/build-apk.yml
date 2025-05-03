@@ -44,7 +44,10 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "app/build/outputs/apk/debug/app-debug.apk"
-          tag: debug-${{ github.run_number }}
+          tag: latest
+          name: Latest Release
+          replacesArtifacts: true
+          allowUpdates: true
           token: ${{ secrets.TOKEN }}
 
       # Build APK Release
@@ -75,5 +78,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "app/build/outputs/apk/release/app-release.apk"
-          tag: release-${{ github.run_number }}
+          tag: latest
+          name: Latest Release
+          replacesArtifacts: true
+          allowUpdates: true
           token: ${{ secrets.TOKEN }}
