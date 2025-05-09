@@ -1,12 +1,7 @@
 package com.example.restaurant
-import com.example.restaurant.SettingsScreen
-import com.example.restaurant.AskOrderScreen
-import com.example.restaurant.DeliverOrderScreen
 
 import android.os.Bundle
 import android.os.RemoteException
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,13 +11,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.restaurant.ui.theme.RestaurantTheme
 
-import com.ainirobot.coreservice.IRobotSettingApi
 import com.ainirobot.coreservice.client.RobotApi
 import com.ainirobot.coreservice.client.ApiListener
 import android.util.Log
@@ -30,6 +23,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.ainirobot.coreservice.client.Definition
 import com.ainirobot.coreservice.client.StatusListener
+import com.ainirobot.coreservice.client.listener.CommandListener
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +51,8 @@ class MainActivity : ComponentActivity() {
                     // Server is connected, set the callback for receiving requests
                     Log.i("MainActivity", "API connected successfully")
                     registerStatusListeners()
+                    rotateRobot("right", reqId = 1, speed = 10.0F, angle = 45F)
+                    rotateRobot("left", reqId = 1, speed = 10.0F, angle = 45F)
                 }
     
                 override fun handleApiDisconnected() {
@@ -102,6 +98,42 @@ class MainActivity : ComponentActivity() {
             })
         } catch (e: Exception) {
             Log.e("MainActivity", "Failed to register status listeners: ${e.message}", e)
+        }
+    }
+
+    private fun rotateRobot(direction: String, reqId: Int, speed: Float, angle: Float? = null) {
+        val rotateListener = object : CommandListener() {
+            override fun onResult(result: Int, message: String) {
+                if ("succeed".equals(message, ignoreCase = true)) {
+                    Log.i("MainActivity", "Rotation $direction succeeded")
+                } else {
+                    Log.e("MainActivity", "Rotation $direction failed: $message")
+                }
+            }
+        }
+
+        try {
+            when (direction) {
+                "left" -> {
+                    if (angle != null) {
+                        RobotApi.getInstance().turnLeft(reqId, speed, angle, rotateListener)
+                    } else {
+                        RobotApi.getInstance().turnLeft(reqId, speed, rotateListener)
+                    }
+                }
+                "right" -> {
+                    if (angle != null) {
+                        RobotApi.getInstance().turnRight(reqId, speed, angle, rotateListener)
+                    } else {
+                        RobotApi.getInstance().turnRight(reqId, speed, rotateListener)
+                    }
+                }
+                else -> {
+                    Log.e("MainActivity", "Invalid direction: $direction")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Failed to execute rotation: ${e.message}", e)
         }
     }
 
