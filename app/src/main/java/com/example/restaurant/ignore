@@ -22,39 +22,97 @@ import androidx.compose.ui.unit.dp
 import com.example.restaurant.ui.theme.RestaurantTheme
 
 import com.ainirobot.coreservice.IRobotSettingApi
+import android.os.RemoteException
+import com.ainirobot.coreservice.client.module.ModuleCallbackApi
 import com.ainirobot.coreservice.client.RobotApi
 import com.ainirobot.coreservice.client.ApiListener
-import android.util.Log
+import com.ainirobot.coreservice.client.StatusListener
+import com.ainirobot.coreservice.client.Definition
+
+private var statusListener: StatusListener? = null
+
+class ModuleCallback : ModuleCallbackApi() {
+    override fun onSendRequest(reqId: Int, reqType: String, reqText: String, reqParam: String): Boolean {
+        // Handle voice command
+        // reqType: voice command type
+        // reqText: voice-to-text
+        // reqParam: voice command parameter
+        return true
+    }
+
+    override fun onRecovery() {
+        // Regain control of the robot
+    }
+
+    override fun onSuspend() {
+        // Control is deprived by the system. All API calls are invalid
+    }
+}
+
+private fun registerStatusListener() {
+    statusListener = object : StatusListener() {
+        override fun onStatusUpdate(type: String, data: String) {
+            // Handle status updates
+            when (type) {
+                Definition.STATUS_BATTERY -> {
+                    // Example: Log battery status
+                    println("Battery status: $data")
+                }
+                Definition.STATUS_POSE -> {
+                    // Example: Log robot pose
+                    println("Robot pose: $data")
+                }
+                Definition.STATUS_POSE_ESTIMATE -> {
+                    // Example: Log positioning status
+                    println("Positioning status: $data")
+                }
+            }
+        }
+    }
+    // Register the listener with the RobotApi
+    RobotApi.getInstance().registerStatusListener(Definition.STATUS_BATTERY, statusListener)
+}
+
+private fun unregisterStatusListener() {
+    statusListener?.let {
+        RobotApi.getInstance().unregisterStatusListener(it)
+    }
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        //this.connectToServer()
+
+        // Register status listener
+        registerStatusListener()
+
+        // Connect to the server
+        RobotApi.getInstance().connectServer(this, object : ApiListener {
+            override fun handleApiDisabled() {
+                // Handle API disabled
+            }
+
+            override fun handleApiConnected() {
+                // Set the callback for receiving requests
+                RobotApi.getInstance().setCallback(ModuleCallback())
+            }
+
+            override fun handleApiDisconnected() {
+                // Handle API disconnected
+            }
+        })
+
         setContent {
             RestaurantTheme {
                 AppNavigation()
             }
         }
     }
-
-    private fun connectToServer() {
-        RobotApi.getInstance().connectServer(this, object : ApiListener {
-            override fun handleApiDisabled() {
-                // Handle API disabled scenario
-                Log.e("MainActivity", "API is disabled")
-            }
-
-            override fun handleApiConnected() {
-                // Server is connected, set the callback for receiving requests
-                Log.i("MainActivity", "API connected successfully")
-            }
-
-            override fun handleApiDisconnected() {
-                // Handle server disconnection
-                Log.e("MainActivity", "API disconnected")
-            }
-        })
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister status listener
+        unregisterStatusListener()
     }    
 }
 
