@@ -4,6 +4,7 @@ import com.example.restaurant.AskOrderScreen
 import com.example.restaurant.DeliverOrderScreen
 
 import android.os.Bundle
+import android.os.RemoteException
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
@@ -25,12 +26,17 @@ import com.ainirobot.coreservice.IRobotSettingApi
 import com.ainirobot.coreservice.client.RobotApi
 import com.ainirobot.coreservice.client.ApiListener
 import android.util.Log
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import com.ainirobot.coreservice.client.Definition
+import com.ainirobot.coreservice.client.StatusListener
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         this.connectToServer()
+
         setContent {
             RestaurantTheme {
                 AppNavigation()
@@ -39,6 +45,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun connectToServer() {
+        // Attempt to connect to the server and handle the connection status
         try {
             RobotApi.getInstance().connectServer(this, object : ApiListener {
                 override fun handleApiDisabled() {
@@ -49,6 +56,7 @@ class MainActivity : ComponentActivity() {
                 override fun handleApiConnected() {
                     // Server is connected, set the callback for receiving requests
                     Log.i("MainActivity", "API connected successfully")
+                    registerStatusListeners()
                 }
     
                 override fun handleApiDisconnected() {
@@ -61,6 +69,57 @@ class MainActivity : ComponentActivity() {
             Log.e("MainActivity", "Failed to connect to server: ${e.message}", e)
         }
     }    
+
+    private fun registerStatusListeners() {
+        // Register listeners for various status updates from the robot
+        try {
+            val statusListener = object : StatusListener() {
+                override fun onStatusUpdate(type: String, data: String) {
+                    try {
+                        when (type) {
+                            Definition.STATUS_POSE -> Log.i("StatusListener", "Robot Pose: $data")
+                            Definition.STATUS_POSE_ESTIMATE -> Log.i("StatusListener", "Positioning Status: $data")
+                            Definition.STATUS_BATTERY -> Log.i("StatusListener", "Battery Info: $data")
+                            else -> Log.w("StatusListener", "Unknown status type: $type")
+                        }
+                    } catch (e: RemoteException) {
+                        Log.e("StatusListener", "Error handling status update: ${e.message}", e)
+                    }
+                }
+            }
+
+            // Register listeners for the desired status types
+            RobotApi.getInstance().registerStatusListener(Definition.STATUS_POSE, statusListener)
+            RobotApi.getInstance().registerStatusListener(Definition.STATUS_POSE_ESTIMATE, statusListener)
+            RobotApi.getInstance().registerStatusListener(Definition.STATUS_BATTERY, statusListener)
+
+            // Unregister the listener when no longer needed (e.g., in onDestroy)
+            lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onDestroy(owner: LifecycleOwner) {
+                    RobotApi.getInstance().unregisterStatusListener(statusListener)
+                    super.onDestroy(owner)
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Failed to register status listeners: ${e.message}", e)
+        }
+    }
+
+    // private fun setOrderCallback() {
+    //     // Set the callback for receiving order requests from the server
+    //     try {
+    //         RobotApi.getInstance().setRequestCallback(object : IRobotSettingApi.RequestCallback {
+    //             override fun onRequestReceived(request: String) {
+    //                 // Handle incoming requests from the server
+    //                 Log.i("MainActivity", "Request received: $request")
+    //                 // Add logic here to process the order
+    //             }
+    //         })
+    //         Log.i("MainActivity", "Order callback set successfully")
+    //     } catch (e: Exception) {
+    //         Log.e("MainActivity", "Failed to set order callback: ${e.message}", e)
+    //     }
+    // }
 }
 
 @Composable
