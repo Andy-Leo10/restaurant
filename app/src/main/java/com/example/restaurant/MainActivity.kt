@@ -24,6 +24,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.ainirobot.coreservice.client.Definition
 import com.ainirobot.coreservice.client.StatusListener
 import com.ainirobot.coreservice.client.listener.CommandListener
+import kotlinx.coroutines.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +52,24 @@ class MainActivity : ComponentActivity() {
                     // Server is connected, set the callback for receiving requests
                     Log.i("MainActivity", "API connected successfully")
                     registerStatusListeners()
-                    rotateRobot("right", reqId = 1, speed = 10.0F, angle = 45F)
-                    rotateRobot("left", reqId = 1, speed = 10.0F, angle = 45F)
+
+                    // // Start the first rotation
+                    // rotateRobotAsync("right", reqId = 1, speed = 10.0F, angle = 30F) 
+                    // rotateRobotAsync("left", reqId = 1, speed = 10.0F, angle = 30F) { success ->
+                    //     Log.i("MainActivity", "Second rotation completed: $success")
+                    // }
+
+                    // Start a coroutine to perform multiple rotations in sequence
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val directions = listOf("right", "left", "right", "left", "right", "left", "right", "left", "right", "left")
+                        for ((index, direction) in directions.withIndex()) {
+                            val success = rotateRobotSync(direction, reqId = index + 1, speed = 10.0F, angle = 15F)
+                            if (!success) {
+                                Log.e("MainActivity", "Rotation $direction failed at step ${index + 1}")
+                                break
+                            }
+                        }
+                    }
                 }
     
                 override fun handleApiDisconnected() {
@@ -101,27 +118,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun rotateRobot(direction: String, reqId: Int, speed: Float, angle: Float? = null) {
+    private fun rotateRobotAsync(direction: String, reqId: Int, speed: Float, angle: Float? = null, onComplete: (Boolean) -> Unit = {}) {
         val rotateListener = object : CommandListener() {
             override fun onResult(result: Int, message: String) {
                 if ("succeed".equals(message, ignoreCase = true)) {
                     Log.i("MainActivity", "Rotation $direction succeeded")
+                    onComplete(true)
                 } else {
                     Log.e("MainActivity", "Rotation $direction failed: $message")
+                    onComplete(false)
                 }
             }
         }
 
         try {
             when (direction) {
-                "left" -> {
+                "right" -> {
                     if (angle != null) {
                         RobotApi.getInstance().turnLeft(reqId, speed, angle, rotateListener)
                     } else {
                         RobotApi.getInstance().turnLeft(reqId, speed, rotateListener)
                     }
                 }
-                "right" -> {
+                "left" -> {
                     if (angle != null) {
                         RobotApi.getInstance().turnRight(reqId, speed, angle, rotateListener)
                     } else {
@@ -130,10 +149,56 @@ class MainActivity : ComponentActivity() {
                 }
                 else -> {
                     Log.e("MainActivity", "Invalid direction: $direction")
+                    onComplete(false)
                 }
             }
         } catch (e: Exception) {
             Log.e("MainActivity", "Failed to execute rotation: ${e.message}", e)
+            onComplete(false)
+        }
+    }
+
+    private suspend fun rotateRobotSync(direction: String, reqId: Int, speed: Float, angle: Float? = null): Boolean {
+        return withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine { continuation ->
+                val rotateListener = object : CommandListener() {
+                    override fun onResult(result: Int, message: String) {
+                        if ("succeed".equals(message, ignoreCase = true)) {
+                            Log.i("MainActivity", "Rotation $direction succeeded")
+                            continuation.resume(true) {}
+                        } else {
+                            Log.e("MainActivity", "Rotation $direction failed: $message")
+                            continuation.resume(false) {}
+                        }
+                    }
+                }
+    
+                try {
+                    when (direction) {
+                        "left" -> {
+                            if (angle != null) {
+                                RobotApi.getInstance().turnLeft(reqId, speed, angle, rotateListener)
+                            } else {
+                                RobotApi.getInstance().turnLeft(reqId, speed, rotateListener)
+                            }
+                        }
+                        "right" -> {
+                            if (angle != null) {
+                                RobotApi.getInstance().turnRight(reqId, speed, angle, rotateListener)
+                            } else {
+                                RobotApi.getInstance().turnRight(reqId, speed, rotateListener)
+                            }
+                        }
+                        else -> {
+                            Log.e("MainActivity", "Invalid direction: $direction")
+                            continuation.resume(false) {}
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "Failed to execute rotation: ${e.message}", e)
+                    continuation.resume(false) {}
+                }
+            }
         }
     }
 
