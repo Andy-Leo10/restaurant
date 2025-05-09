@@ -57,5 +57,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     // mine
+    implementation(libs.gson)
     implementation(project.files("libs/robotservice.jar"))
 }

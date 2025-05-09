@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        //this.connectToServer()
+        this.connectToServer()
         setContent {
             RestaurantTheme {
                 AppNavigation()
@@ -39,22 +39,27 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun connectToServer() {
-        RobotApi.getInstance().connectServer(this, object : ApiListener {
-            override fun handleApiDisabled() {
-                // Handle API disabled scenario
-                Log.e("MainActivity", "API is disabled")
-            }
-
-            override fun handleApiConnected() {
-                // Server is connected, set the callback for receiving requests
-                Log.i("MainActivity", "API connected successfully")
-            }
-
-            override fun handleApiDisconnected() {
-                // Handle server disconnection
-                Log.e("MainActivity", "API disconnected")
-            }
-        })
+        try {
+            RobotApi.getInstance().connectServer(this, object : ApiListener {
+                override fun handleApiDisabled() {
+                    // Handle API disabled scenario
+                    Log.e("MainActivity", "API is disabled")
+                }
+    
+                override fun handleApiConnected() {
+                    // Server is connected, set the callback for receiving requests
+                    Log.i("MainActivity", "API connected successfully")
+                }
+    
+                override fun handleApiDisconnected() {
+                    // Handle server disconnection
+                    Log.e("MainActivity", "API disconnected")
+                }
+            })
+        } catch (e: Exception) {
+            // Log the exception to help debug the issue
+            Log.e("MainActivity", "Failed to connect to server: ${e.message}", e)
+        }
     }    
 }
 
