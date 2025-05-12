@@ -25,8 +25,9 @@ import com.ainirobot.coreservice.client.Definition
 import com.ainirobot.coreservice.client.StatusListener
 import com.ainirobot.coreservice.client.listener.CommandListener
 import kotlinx.coroutines.*
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+
+// components
+import com.example.restaurant.components.ScreenSizeComponent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RestaurantTheme {
                 // AppNavigation()
-                ScreenSizeExample()
+                ScreenSizeComponent()
             }
         }
     }
@@ -220,25 +221,6 @@ class MainActivity : ComponentActivity() {
     //         Log.e("MainActivity", "Failed to set order callback: ${e.message}", e)
     //     }
     // }
-}
-
-@Composable
-fun ScreenSizeExample() {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current.density
-    
-    val screenWidthDp = configuration.screenWidthDp
-    val screenHeightDp = configuration.screenHeightDp
-    val screenWidthPx = (screenWidthDp * density).toInt()
-    val screenHeightPx = (screenHeightDp * density).toInt()
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Screen size: ${screenWidthDp}dp x ${screenHeightDp}dp")
-        Text("Screen size: ${screenWidthPx}px x ${screenHeightPx}px")
-    }
 }
 
 @Composable
