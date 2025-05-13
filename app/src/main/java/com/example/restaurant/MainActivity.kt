@@ -18,9 +18,12 @@ import android.util.Log
 import androidx.compose.ui.platform.LocalConfiguration 
 import android.content.res.Configuration 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
 
 // components
-import com.example.restaurant.components.ScreenSizeComponent
+import com.example.restaurant.components.TileButton
 // robot_utils
 import com.example.restaurant.robot_utils.RobotApiManager
 
@@ -73,35 +76,32 @@ fun MainScreen(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
+                TileButton(
+                    text = "Settings",
+                    imageResId = R.drawable.background1,
                     onClick = onNavigateToSettings,
                     modifier = Modifier
-                        .fillMaxWidth(0.5f) 
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Settings")
-                }
-                Spacer(modifier = Modifier.height(8.dp)) 
-                Button(
+                        .fillMaxWidth(0.5f) // use 50% of the screen width
+                        .aspectRatio(1f) // maintain a square aspect ratio
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TileButton(
+                    text = "Ask Order",
+                    imageResId = R.drawable.background1,
                     onClick = onNavigateToAskOrder,
                     modifier = Modifier
-                        .fillMaxWidth(0.5f) 
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Ask Order")
-                }
-                Spacer(modifier = Modifier.height(8.dp)) 
-                Button(
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TileButton(
+                    text = "Deliver Order",
+                    imageResId = R.drawable.background1,
                     onClick = onNavigateToDeliverOrder,
                     modifier = Modifier
-                        .fillMaxWidth(0.5f) 
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(16.dp)   
-                ) {
-                    Text("Deliver Order")
-                }
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(1f)
+                )
             }
         } else {
             // Grid of 1x3 for landscape mode
@@ -112,35 +112,32 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
+                TileButton(
+                    text = "Settings",
+                    imageResId = R.drawable.background,
                     onClick = onNavigateToSettings,
                     modifier = Modifier
-                        .fillMaxHeight(0.5f) 
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(16.dp)    
-                ) {
-                    Text("Settings")
-                }
-                Spacer(modifier = Modifier.width(16.dp)) 
-                Button(
+                        .fillMaxHeight(0.5f)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                TileButton(
+                    text = "Ask Order",
+                    imageResId = R.drawable.background,
                     onClick = onNavigateToAskOrder,
                     modifier = Modifier
-                        .fillMaxHeight(0.5f) 
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(16.dp)    
-                ) {
-                    Text("Ask Order")
-                }
-                Spacer(modifier = Modifier.width(16.dp)) 
-                Button(
+                        .fillMaxHeight(0.5f)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                TileButton(
+                    text = "Deliver Order",
+                    imageResId = R.drawable.background,
                     onClick = onNavigateToDeliverOrder,
                     modifier = Modifier
-                        .fillMaxHeight(0.5f) 
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(16.dp)    
-                ) {
-                    Text("Deliver Order")
-                }
+                        .fillMaxHeight(0.5f)
+                        .aspectRatio(1f)
+                )
             }
         }
     }
