@@ -1,7 +1,7 @@
 package com.example.restaurant
+import com.example.restaurant.ui.theme.RestaurantTheme
 
 import android.os.Bundle
-import android.os.RemoteException
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,16 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.restaurant.ui.theme.RestaurantTheme
-
-import com.ainirobot.coreservice.client.RobotApi
-import com.ainirobot.coreservice.client.ApiListener
 import android.util.Log
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import com.ainirobot.coreservice.client.Definition
-import com.ainirobot.coreservice.client.StatusListener
-import com.ainirobot.coreservice.client.listener.CommandListener
+import androidx.compose.ui.platform.LocalConfiguration 
+import android.content.res.Configuration 
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 // components
 import com.example.restaurant.components.ScreenSizeComponent
@@ -34,7 +28,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        RobotApiManager.connectToServer(this, this)
+        // RobotApiManager.connectToServer(this, this)
 
         setContent {
             RestaurantTheme {
@@ -42,22 +36,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    // private fun setOrderCallback() {
-    //     // Set the callback for receiving order requests from the server
-    //     try {
-    //         RobotApi.getInstance().setRequestCallback(object : IRobotSettingApi.RequestCallback {
-    //             override fun onRequestReceived(request: String) {
-    //                 // Handle incoming requests from the server
-    //                 Log.i("MainActivity", "Request received: $request")
-    //                 // Add logic here to process the order
-    //             }
-    //         })
-    //         Log.i("MainActivity", "Order callback set successfully")
-    //     } catch (e: Exception) {
-    //         Log.e("MainActivity", "Failed to set order callback: ${e.message}", e)
-    //     }
-    // }
 }
 
 @Composable
@@ -82,33 +60,103 @@ fun MainScreen(
     onNavigateToAskOrder: () -> Unit = {},
     onNavigateToDeliverOrder: () -> Unit = {}
 ) {
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(onClick = onNavigateToSettings) {
-                Text("Settings")
+        if (isPortrait) {
+            // Grid of 3x1 for portrait mode
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(
+                    onClick = onNavigateToSettings,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f) 
+                        .aspectRatio(1f),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text("Settings")
+                }
+                Spacer(modifier = Modifier.height(8.dp)) 
+                Button(
+                    onClick = onNavigateToAskOrder,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f) 
+                        .aspectRatio(1f),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text("Ask Order")
+                }
+                Spacer(modifier = Modifier.height(8.dp)) 
+                Button(
+                    onClick = onNavigateToDeliverOrder,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f) 
+                        .aspectRatio(1f),
+                    shape = RoundedCornerShape(16.dp)   
+                ) {
+                    Text("Deliver Order")
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onNavigateToAskOrder) {
-                Text("Ask Order")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onNavigateToDeliverOrder) {
-                Text("Deliver Order")
+        } else {
+            // Grid of 1x3 for landscape mode
+            Row(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = onNavigateToSettings,
+                    modifier = Modifier
+                        .fillMaxHeight(0.5f) 
+                        .aspectRatio(1f),
+                    shape = RoundedCornerShape(16.dp)    
+                ) {
+                    Text("Settings")
+                }
+                Spacer(modifier = Modifier.width(16.dp)) 
+                Button(
+                    onClick = onNavigateToAskOrder,
+                    modifier = Modifier
+                        .fillMaxHeight(0.5f) 
+                        .aspectRatio(1f),
+                    shape = RoundedCornerShape(16.dp)    
+                ) {
+                    Text("Ask Order")
+                }
+                Spacer(modifier = Modifier.width(16.dp)) 
+                Button(
+                    onClick = onNavigateToDeliverOrder,
+                    modifier = Modifier
+                        .fillMaxHeight(0.5f) 
+                        .aspectRatio(1f),
+                    shape = RoundedCornerShape(16.dp)    
+                ) {
+                    Text("Deliver Order")
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 500, heightDp = 284)
 @Composable
-fun DefaultPreview() {
+fun TabletPreview() {
+    RestaurantTheme {
+        MainScreen()
+    }
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 568)
+@Composable
+fun PhonePreview() {
     RestaurantTheme {
         MainScreen()
     }

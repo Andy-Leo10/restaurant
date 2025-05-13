@@ -97,7 +97,8 @@ object RobotApiManager {
             Log.e("RobotApiManager", "Failed to register status listeners: ${e.message}", e)
         }
     }
-public fun rotateRobotAsync(direction: String, reqId: Int, speed: Float, angle: Float? = null, onComplete: (Boolean) -> Unit = {}) {
+
+    public fun rotateRobotAsync(direction: String, reqId: Int, speed: Float, angle: Float? = null, onComplete: (Boolean) -> Unit = {}) {
     val rotateListener = object : CommandListener() {
         override fun onResult(result: Int, message: String) {
             if ("succeed".equals(message, ignoreCase = true)) {
@@ -135,6 +136,22 @@ public fun rotateRobotAsync(direction: String, reqId: Int, speed: Float, angle: 
         Log.e("BasicMotion", "Failed to execute rotation: ${e.message}", e)
         onComplete(false)
     }
+
+    // public fun setOrderCallback() {
+    //     // Set the callback for receiving order requests from the server
+    //     try {
+    //         RobotApi.getInstance().setRequestCallback(object : IRobotSettingApi.RequestCallback {
+    //             override fun onRequestReceived(request: String) {
+    //                 // Handle incoming requests from the server
+    //                 Log.i("MainActivity", "Request received: $request")
+    //                 // Add logic here to process the order
+    //             }
+    //         })
+    //         Log.i("MainActivity", "Order callback set successfully")
+    //     } catch (e: Exception) {
+    //         Log.e("MainActivity", "Failed to set order callback: ${e.message}", e)
+    //     }
+    // }    
 }
 
 public suspend fun rotateRobotSync(direction: String, reqId: Int, speed: Float, angle: Float? = null): Boolean {
