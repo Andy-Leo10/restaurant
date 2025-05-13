@@ -85,79 +85,77 @@ fun MainScreen(
         }
 
         // Foreground content
-        Scaffold(modifier = Modifier.fillMaxSize(), containerColor = androidx.compose.ui.graphics.Color.Transparent) { innerPadding ->
-            if (isPortrait) {
-                // Grid of 3x1 for portrait mode
-                Column(
+        if (isPortrait) {
+            // Grid of 3x1 for portrait mode
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp), // Padding around the grid
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TileButton(
+                    text = "Settings",
+                    imageResId = R.drawable.v_rectangle,
+                    onClick = onNavigateToSettings,
                     modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TileButton(
-                        text = "Settings",
-                        imageResId = R.drawable.v_rectangle,
-                        onClick = onNavigateToSettings,
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .aspectRatio(1f)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TileButton(
-                        text = "Ask Order",
-                        imageResId = R.drawable.v_rectangle,
-                        onClick = onNavigateToAskOrder,
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .aspectRatio(1f)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TileButton(
-                        text = "Deliver Order",
-                        imageResId = R.drawable.v_rectangle,
-                        onClick = onNavigateToDeliverOrder,
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .aspectRatio(1f)
-                    )
-                }
-            } else {
-                // Grid of 1x3 for landscape mode
-                Row(
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TileButton(
+                    text = "Ask Order",
+                    imageResId = R.drawable.v_rectangle,
+                    onClick = onNavigateToAskOrder,
                     modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TileButton(
-                        text = "Settings",
-                        imageResId = R.drawable.h_rectangle,
-                        onClick = onNavigateToSettings,
-                        modifier = Modifier
-                            .fillMaxHeight(0.5f)
-                            .aspectRatio(1f)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    TileButton(
-                        text = "Ask Order",
-                        imageResId = R.drawable.h_rectangle,
-                        onClick = onNavigateToAskOrder,
-                        modifier = Modifier
-                            .fillMaxHeight(0.5f)
-                            .aspectRatio(1f)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    TileButton(
-                        text = "Deliver Order",
-                        imageResId = R.drawable.h_rectangle,
-                        onClick = onNavigateToDeliverOrder,
-                        modifier = Modifier
-                            .fillMaxHeight(0.5f)
-                            .aspectRatio(1f)
-                    )
-                }
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TileButton(
+                    text = "Deliver Order",
+                    imageResId = R.drawable.v_rectangle,
+                    onClick = onNavigateToDeliverOrder,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(1f)
+                )
+            }
+        } else {
+            // Grid of 1x3 for landscape mode
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp), // Padding around the grid
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TileButton(
+                    text = "Settings",
+                    imageResId = R.drawable.h_rectangle,
+                    onClick = onNavigateToSettings,
+                    modifier = Modifier
+                        .fillMaxHeight(0.5f)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                TileButton(
+                    text = "Ask Order",
+                    imageResId = R.drawable.h_rectangle,
+                    onClick = onNavigateToAskOrder,
+                    modifier = Modifier
+                        .fillMaxHeight(0.5f)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                TileButton(
+                    text = "Deliver Order",
+                    imageResId = R.drawable.h_rectangle,
+                    onClick = onNavigateToDeliverOrder,
+                    modifier = Modifier
+                        .fillMaxHeight(0.5f)
+                        .aspectRatio(1f)
+                )
             }
         }
     }
