@@ -6,9 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
@@ -17,11 +15,9 @@ import androidx.compose.ui.unit.dp
 import android.util.Log
 import androidx.compose.ui.platform.LocalConfiguration 
 import android.content.res.Configuration 
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.graphics.graphicsLayer
 
 // components
 import com.example.restaurant.components.TileButton
@@ -32,6 +28,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Enable immersive mode
+        enableImmersiveMode()
+        // Connect to the robot API
         // RobotApiManager.connectToServer(this, this)
 
         setContent {

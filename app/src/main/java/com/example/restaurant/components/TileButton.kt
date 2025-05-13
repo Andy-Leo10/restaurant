@@ -29,7 +29,7 @@ fun TileButton(
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = null,
-                contentScale = ContentScale.Crop, // Ensures the image fills the button
+                contentScale = ContentScale.FillBounds, // Ensures the image fills the button
                 modifier = Modifier.fillMaxSize()
             )
             Text(
