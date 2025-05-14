@@ -43,14 +43,59 @@ fun AskOrderScreen(onBackClick: () -> Unit = {}) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp)
         ) {
-            Text("Ask Order Screen")
+            // Return button in the top-left corner
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(onClick = onBackClick) {
+                    Text("←") // Replace with an icon if desired
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = "Select table to ask order",
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally),
+                )
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onBackClick) {
-                Text("Back to Main Screen")
+
+            // 1x2 Grid layout
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Image on the left
+                Image(
+                    painter = painterResource(id = R.drawable.icon_0), // Replace with your image resource
+                    contentDescription = null,
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Button on the right
+                Button(
+                    onClick = { /* Add your button action here */ },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("View Menu")
+                }
             }
         }
     }
