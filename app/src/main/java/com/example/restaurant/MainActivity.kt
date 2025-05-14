@@ -6,14 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import android.util.Log
-import androidx.compose.ui.platform.LocalConfiguration 
+import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration 
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
@@ -22,7 +20,9 @@ import androidx.compose.ui.layout.ContentScale
 // components
 import com.example.restaurant.components.TileButton
 // robot_utils
-import com.example.restaurant.robot_utils.RobotApiManager
+import com.example.restaurant.screens.AskOrderScreen
+import com.example.restaurant.screens.DeliverOrderScreen
+import com.example.restaurant.screens.SettingsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,7 +163,7 @@ fun MainScreen(
 
 @Preview(showBackground = true, widthDp = 500, heightDp = 284)
 @Composable
-fun TabletPreview() {
+fun MainScreen_TabletPreview() {
     RestaurantTheme {
         MainScreen()
     }
@@ -171,7 +171,7 @@ fun TabletPreview() {
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 568)
 @Composable
-fun PhonePreview() {
+fun MainScreen_PhonePreview() {
     RestaurantTheme {
         MainScreen()
     }
