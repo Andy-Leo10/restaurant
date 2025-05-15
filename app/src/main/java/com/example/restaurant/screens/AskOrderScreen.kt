@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 // components
 import com.example.restaurant.components.WebViewScreen
@@ -31,7 +32,7 @@ fun AskOrderScreen(onBackClick: () -> Unit = {}) {
 
     if (showWebView) {
         WebViewScreen(
-            url = "https://www.wikipedia.org/",
+            url = "https://zox-peru-web.lovable.app/",
             onClose = { showWebView = false }
         )
     } 
@@ -80,6 +81,7 @@ fun AskOrderScreen(onBackClick: () -> Unit = {}) {
                         }
                         Text(
                             text = "Select table to ask order",
+                            style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .wrapContentWidth(Alignment.CenterHorizontally),
@@ -138,6 +140,7 @@ fun AskOrderScreen(onBackClick: () -> Unit = {}) {
                         }
                         Text(
                             text = "Select table to ask order",
+                            style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .wrapContentWidth(Alignment.CenterHorizontally),

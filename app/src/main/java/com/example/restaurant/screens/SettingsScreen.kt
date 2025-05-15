@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,10 @@ fun SettingsScreen(onBackClick: () -> Unit = {}) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Settings Screen")
+            Text(
+                text="Settings Screen",
+                style = MaterialTheme.typography.bodyLarge,
+                )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onBackClick) {
                 Text("Back to Main Screen")
