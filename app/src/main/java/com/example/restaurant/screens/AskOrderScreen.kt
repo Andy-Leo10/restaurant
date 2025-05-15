@@ -15,89 +15,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import android.content.res.Configuration
 import com.example.restaurant.R
-import android.util.Log
-import android.webkit.JavascriptInterface
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.ui.viewinterop.AndroidView
+// components
+import com.example.restaurant.components.WebViewScreen
+import com.example.restaurant.components.TileButton
 
 @Composable
 fun AskOrderScreen(onBackClick: () -> Unit = {}) {
     var showWebView by remember { mutableStateOf(false) }
 
     if (showWebView) {
-        // WebView Screen
-        Box(modifier = Modifier.fillMaxSize()) {
-            // WebView
-            AndroidView(
-                factory = { context ->
-                    WebView(context).apply {
-                        settings.javaScriptEnabled = true // Enable JavaScript
-                        settings.domStorageEnabled = true // Enable DOM storage
-                        settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" // Custom user-agent
-                        // webViewClient = WebViewClient()
-
-                        // Add a JavaScript interface to communicate with Kotlin
-                        addJavascriptInterface(object {
-                            @JavascriptInterface
-                            fun onMyButtonClicked(searchValue: String) {
-                                // Log the search value in your program
-                                Log.d("WebView", "Search button clicked with value: $searchValue")
-                            }
-                        }, "AndroidBridge")
-
-                        webViewClient = object : WebViewClient() {
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                super.onPageFinished(view, url)
-            
-                                // Inject JavaScript to write into the input box
-                                view?.evaluateJavascript(
-                                    """
-                                    document.getElementById('searchInput').value = 'Hello World';
-                                    """.trimIndent(),
-                                    null
-                                )
-            
-                                // Inject JavaScript to listen for the search button click
-                                view?.evaluateJavascript(
-                                    """
-                                    document.querySelector('button[type="submit"]').addEventListener('click', function() {
-                                        var searchValue = document.getElementById('searchInput').value;
-                                        AndroidBridge.onMyButtonClicked(searchValue);
-                                    });
-                                    """.trimIndent(),
-                                    null
-                                )
-                            }
-                        }
-
-                        loadUrl("https://www.wikipedia.org/") // https://zox-peru-web.lovable.app/
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-
-            // Floating Action Button to close WebView
-            FloatingActionButton(
-                onClick = { showWebView = false },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Icon(Icons.Filled.Close, contentDescription = "Close WebView")
-            }
-        }
-    } else {
-        // Main Screen
+        WebViewScreen(
+            url = "https://www.wikipedia.org/",
+            onClose = { showWebView = false }
+        )
+    } 
+    else {
+        // AskOrderScreen
         Box(modifier = Modifier.fillMaxSize()) {
             // Background image depending on orientation
             val configuration = LocalConfiguration.current
@@ -120,66 +59,120 @@ fun AskOrderScreen(onBackClick: () -> Unit = {}) {
             }
 
             // Foreground content
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Return button in the top-left corner
-                Row(
+            if (isPortrait) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxSize()
+                        .padding(16.dp)
                 ) {
-                    Button(onClick = onBackClick) {
-                        Text("←") // Replace with an icon if desired
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            modifier = Modifier.padding(start = 8.dp)
+                    // Return button in the top-left corner and title
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.2f), // vertically 20% of the screen
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                            )
+                        }
+                        Text(
+                            text = "Select table to ask order",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth(Alignment.CenterHorizontally),
                         )
                     }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Text(
-                        text = "Select table to ask order",
+                    // Image on the top and button on the bottom
+                    Column(
                         modifier = Modifier
-                            .weight(1f)
                             .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 1x2 Grid layout
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Image on the left
-                    Image(
-                        painter = painterResource(id = R.drawable.icon_0), // Replace with your image resource
-                        contentDescription = null,
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    // Button on the right
-                    Button(
-                        onClick = { showWebView = true },
-                        modifier = Modifier.weight(1f)
+                            .weight(0.8f), // vertically 80% of the screen
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceAround
                     ) {
-                        Text("View Menu")
+                        // Image on the top
+                        Image(
+                            painter = painterResource(id = R.drawable.icon_0), // Replace with your image resource
+                            contentDescription = null,
+                            modifier = Modifier
+                                .weight(0.5f), // vertically 50% of the screen
+                            contentScale = ContentScale.Fit
+                        )
+                        // Button on the bottom inside a Box
+                        Box(
+                            modifier = Modifier
+                                .weight(0.5f), // vertically 50% of the screen
+                            contentAlignment = Alignment.Center // Center the button inside the Box
+                        ) {
+                        TileButton(
+                                text = "View Menu",
+                                imageResId = R.drawable.v_mirror,
+                                onClick = {showWebView = true},
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5f)
+                            )
+                        }
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    // Return button in the top-left corner and title
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.2f), // vertically 20% of the screen
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                            )
+                        }
+                        Text(
+                            text = "Select table to ask order",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth(Alignment.CenterHorizontally),
+                        )
+                    }
+                    // 1x2 Grid layout
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f), // vertically 80% of the screen
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Image on the left
+                        Image(
+                            painter = painterResource(id = R.drawable.icon_0), // Replace with your image resource
+                            contentDescription = null,
+                            modifier = Modifier
+                                .weight(0.5f), // horizontally 50% of the screen
+                            contentScale = ContentScale.Fit
+                        )
+                        // Button on the right inside a Box
+                        Box(
+                            modifier = Modifier
+                                .weight(0.5f), // horizontally 50% of the screen
+                            contentAlignment = Alignment.Center // Center the button inside the Box
+                        ) {
+                        TileButton(
+                                text = "View Menu",
+                                imageResId = R.drawable.v_mirror,
+                                onClick = {showWebView = true},
+                                modifier = Modifier
+                                    .fillMaxWidth(0.66f)
+                            )
+                        }
                     }
                 }
             }
