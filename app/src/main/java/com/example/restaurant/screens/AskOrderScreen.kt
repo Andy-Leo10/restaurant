@@ -156,9 +156,10 @@ fun AskOrderScreen(onBackClick: () -> Unit = {}) {
                     ) {
                         // Image on the left
                         Image(
-                            painter = painterResource(id = R.drawable.icon_0), // Replace with your image resource
+                            painter = painterResource(id = R.drawable.zoluxiones), // Replace with your image resource
                             contentDescription = null,
                             modifier = Modifier
+                                .fillMaxHeight(0.8f) // zooming the image
                                 .weight(0.5f), // horizontally 50% of the screen
                             contentScale = ContentScale.Fit
                         )
