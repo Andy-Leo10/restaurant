@@ -5,7 +5,6 @@ import android.os.RemoteException
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import android.content.Context
-import kotlinx.coroutines.*
 
 import com.ainirobot.coreservice.client.ApiListener
 import com.ainirobot.coreservice.client.RobotApi
@@ -18,10 +17,14 @@ import com.ainirobot.coreservice.client.Definition
 // }, 2000)
 
 // robot_utils
-// import com.example.restaurant.robot_utils.rotateRobotAsync
-// import com.example.restaurant.robot_utils.rotateRobotSync
 import com.example.restaurant.robot_utils.BasicMotion
-import com.ainirobot.coreservice.client.listener.CommandListener
+// import com.example.restaurant.robot_utils.MapAndPosition
+// import com.example.restaurant.robot_utils.Navigation
+// import com.ainirobot.coreservice.client.listener.CommandListener
+// import org.json.JSONArray
+// import org.json.JSONException
+// import org.json.JSONObject
+// import com.ainirobot.coreservice.client.listener.ActionListener
 
 object RobotApiManager {
     public fun connectToServer(context: Context, lifecycleOwner: LifecycleOwner) {
@@ -40,21 +43,18 @@ object RobotApiManager {
 
                     // Start the first rotation
                     BasicMotion.rotateRobotAsync("right", reqId = 1, speed = 10.0F, angle = 30F) 
-                    // BasicMotion.rotateRobotAsync("left", reqId = 1, speed = 10.0F, angle = 30F) { success ->
-                    //     Log.i("RobotApiManager", "Second rotation completed: $success")
-                    // }
-
-                    // // Start a coroutine to perform multiple rotations in sequence
-                    // CoroutineScope(Dispatchers.Main).launch {
-                    //     val directions = listOf("right", "left", "right", "left", "right", "left", "right", "left", "right", "left")
-                    //     for ((index, direction) in directions.withIndex()) {
-                    //         val success = BasicMotion.rotateRobotSync(direction, reqId = index + 1, speed = 10.0F, angle = 15F)
-                    //         if (!success) {
-                    //             Log.e("RobotApiManager", "Rotation $direction failed at step ${index + 1}")
-                    //             break
-                    //         }
-                    //     }
-                    // }
+                    BasicMotion.rotateRobotAsync("left", reqId = 1, speed = 10.0F, angle = 30F) { success ->
+                        Log.i("RobotApiManager", "Second rotation completed: $success")
+                    }
+                    // getPlaceList(reqId = 1)
+                    // getMapName(reqId = 1)
+                    // getPosition(reqId = 1)
+                    // startNavigation(
+                    //     reqId = 1,
+                    //     destName = "cocina",
+                    //     coordinateDeviation = 0.5,
+                    //     time = 10000L
+                    // )
                 }
     
                 override fun handleApiDisconnected() {
@@ -104,19 +104,128 @@ object RobotApiManager {
         }
     }
 
-    // public fun setOrderCallback() {
-    //     // Set the callback for receiving order requests from the server
-    //     try {
-    //         RobotApi.getInstance().setRequestCallback(object : IRobotSettingApi.RequestCallback {
-    //             override fun onRequestReceived(request: String) {
-    //                 // Handle incoming requests from the server
-    //                 Log.i("MainActivity", "Request received: $request")
-    //                 // Add logic here to process the order
-    //             }
-    //         })
-    //         Log.i("MainActivity", "Order callback set successfully")
-    //     } catch (e: Exception) {
-    //         Log.e("MainActivity", "Failed to set order callback: ${e.message}", e)
-    //     }
-    // }    
+// fun getPlaceList(reqId: Int) {
+//     RobotApi.getInstance().getPlaceList(reqId, object : CommandListener() {
+//         override fun onResult(result: Int, message: String?) {
+//             try {
+//                 if (message != null) {
+//                     val jsonArray = JSONArray(message)
+//                     for (i in 0 until jsonArray.length()) {
+//                         val json = jsonArray.getJSONObject(i)
+//                         val x = json.getDouble("x")      // x coordinate
+//                         val y = json.getDouble("y")      // y coordinate
+//                         val theta = json.getDouble("theta") // z coordinate
+//                         val name = json.getString("name") // position name
+//                         Log.i("TestAndres", "Place: name=$name, x=$x, y=$y, theta=$theta")
+//                     }
+//                 } else {
+//                     Log.e("TestAndres", "Received null message in getPlaceList")
+//                 }
+//             } catch (e: JSONException) {
+//                 Log.e("TestAndres", "JSON parsing error: ${e.message}", e)
+//             } catch (e: NullPointerException) {
+//                 Log.e("TestAndres", "Null pointer error: ${e.message}", e)
+//             }
+//         }
+//     })
+// }
+
+// fun getMapName(reqId: Int) {
+//     RobotApi.getInstance().getMapName(reqId, object : CommandListener() {
+//         override fun onResult(result: Int, message: String?) {
+//             if (!message.isNullOrEmpty()) {
+//                 // "message" means map name
+//                 val mapName = message
+//                 Log.i("TestAndres", "Map name: $mapName")
+//             } else {
+//                 Log.e("TestAndres", "Map name is null or empty")
+//             }
+//         }
+//     })
+// }
+
+// fun getPosition(reqId: Int) {
+//     RobotApi.getInstance().getPosition(reqId, object : CommandListener() {
+//         override fun onResult(result: Int, message: String?) {
+//             try {
+//                 if (message != null) {
+//                     val json = JSONObject(message)
+//                     // x coordinate
+//                     val x = json.getDouble(Definition.JSON_NAVI_POSITION_X)
+//                     // y coordinate
+//                     val y = json.getDouble(Definition.JSON_NAVI_POSITION_Y)
+//                     // z coordinate (theta)
+//                     val z = json.getDouble(Definition.JSON_NAVI_POSITION_THETA)
+//                     Log.i("TestAndres", "Position: x=$x, y=$y, theta=$z")
+//                 } else {
+//                     Log.e("TestAndres", "Received null message in getPosition")
+//                 }
+//             } catch (e: JSONException) {
+//                 Log.e("TestAndres", "JSON parsing error: ${e.message}", e)
+//             } catch (e: NullPointerException) {
+//                 Log.e("TestAndres", "Null pointer error: ${e.message}", e)
+//             }
+//         }
+//     })
+// }
+
+// fun startNavigation(
+//     reqId: Int,
+//     destName: String,
+//     coordinateDeviation: Double,
+//     time: Long
+// ) {
+//     val navigationListener = object : ActionListener() {
+//         override fun onResult(status: Int, response: String?) {
+//             when (status) {
+//                 Definition.RESULT_OK -> {
+//                     if (response == "true") {
+//                         Log.i("TestAndres", "Navigation successful")
+//                     } else {
+//                         Log.e("TestAndres", "Navigation failed")
+//                     }
+//                 }
+//             }
+//         }
+
+//         override fun onError(errorCode: Int, errorString: String?) {
+//             when (errorCode) {
+//                 Definition.ERROR_NOT_ESTIMATE -> Log.e("TestAndres", "Not currently located")
+//                 Definition.ERROR_IN_DESTINATION -> Log.e("TestAndres", "Already in destination range")
+//                 Definition.ERROR_DESTINATION_NOT_EXIST -> Log.e("TestAndres", "Destination does not exist")
+//                 Definition.ERROR_DESTINATION_CAN_NOT_ARRAIVE -> Log.e("TestAndres", "Cannot reach destination (obstacle/timeout)")
+//                 Definition.ACTION_RESPONSE_ALREADY_RUN -> Log.e("TestAndres", "API already running, stop before calling again")
+//                 Definition.ACTION_RESPONSE_REQUEST_RES_ERROR -> Log.e("TestAndres", "Chassis control API already running, stop first")
+//                 Definition.ERROR_MULTI_ROBOT_WAITING_TIMEOUT -> Log.e("TestAndres", "Multi-robot waiting timeout")
+//                 Definition.ERROR_NAVIGATION_FAILED -> Log.e("TestAndres", "Navigation failed (other problem)")
+//                 else -> Log.e("TestAndres", "Navigation error: $errorCode $errorString")
+//             }
+//         }
+
+//         override fun onStatusUpdate(status: Int, data: String?, extraData: String?) {
+//             when (status) {
+//                 Definition.STATUS_NAVI_AVOID -> Log.i("TestAndres", "Route blocked by obstacles")
+//                 Definition.STATUS_NAVI_AVOID_END -> Log.i("TestAndres", "Obstacle disappeared")
+//                 Definition.STATUS_START_NAVIGATION -> Log.i("TestAndres", "Start navigation")
+//                 Definition.STATUS_START_CRUISE -> Log.i("TestAndres", "Start cruise")
+//                 Definition.STATUS_NAVI_OUT_MAP -> Log.i("TestAndres", "Run out of map")
+//                 Definition.STATUS_NAVI_MULTI_ROBOT_WAITING -> Log.i("TestAndres", "Waiting for other robots")
+//                 Definition.STATUS_NAVI_MULTI_ROBOT_WAITING_END -> Log.i("TestAndres", "Waiting ended")
+//                 Definition.STATUS_NAVI_GO_STRAIGHT -> Log.i("TestAndres", "Go straight")
+//                 Definition.STATUS_NAVI_TURN_LEFT -> Log.i("TestAndres", "Turn left")
+//                 Definition.STATUS_NAVI_TURN_RIGHT -> Log.i("TestAndres", "Turn right")
+//                 else -> Log.i("TestAndres", "Status update: $status $data $extraData")
+//             }
+//         }
+//     }
+
+//     RobotApi.getInstance().startNavigation(
+//         reqId,
+//         destName,
+//         coordinateDeviation,
+//         time,
+//         navigationListener
+//     )
+// }
+
 }

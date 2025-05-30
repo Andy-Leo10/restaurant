@@ -96,3 +96,26 @@ object BasicMotion {
         }
     }
 }
+
+/* EXAMPLES
+
+- rotateRobotAsync
+BasicMotion.rotateRobotAsync("right", reqId = 1, speed = 10.0F, angle = 30F)
+BasicMotion.rotateRobotAsync("left", reqId = 1, speed = 10.0F, angle = 30F) { success ->
+    Log.i("RobotApiManager", "Rotation completed: $success")
+}
+
+- rotateRobotSync
+// Start a coroutine to perform multiple rotations in sequence
+CoroutineScope(Dispatchers.Main).launch {
+    val directions = listOf("right", "left", "right", "left", "right", "left", "right", "left", "right", "left")
+    for ((index, direction) in directions.withIndex()) {
+        val success = BasicMotion.rotateRobotSync(direction, reqId = index + 1, speed = 10.0F, angle = 15F)
+        if (!success) {
+            Log.e("RobotApiManager", "Rotation $direction failed at step ${index + 1}")
+            break
+        }
+    }
+}
+
+*/
